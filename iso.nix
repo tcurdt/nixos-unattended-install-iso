@@ -34,7 +34,7 @@ let
         echo "Found $DEVICE_MAIN, erasing..."
       fi
 
-      DISKO_DEVICE_MAIN=''${DEVICE_MAIN#"/dev/"} ${system.config.system.build.diskoScript} 2> /dev/null4
+      DISKO_DEVICE_MAIN=''${DEVICE_MAIN#"/dev/"} ${system.config.system.build.diskoScript} 2> /dev/null
 
       echo "Installing the system..."
       nixos-install --no-channel-copy --no-root-password --option substituters "" --system ${system.config.system.build.toplevel}
