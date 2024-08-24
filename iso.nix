@@ -1,6 +1,5 @@
-{ config, pkgs, lib, modulesPath, inputs, ... }:
+{ config, pkgs, lib, modulesPath, targetSystem, ... }:
 let
-  system = inputs.self.nixosConfigurations.nixos;
   installer = pkgs.writeShellApplication {
     name = "installer";
     runtimeInputs = with pkgs; [
@@ -34,10 +33,10 @@ let
         echo "Found $DEVICE_MAIN, erasing..."
       fi
 
-      DISKO_DEVICE_MAIN=''${DEVICE_MAIN#"/dev/"} ${system.config.system.build.diskoScript} 2> /dev/null
+      DISKO_DEVICE_MAIN=''${DEVICE_MAIN#"/dev/"} ${targetSystem.config.system.build.diskoScript} 2> /dev/null
 
       echo "Installing the system..."
-      nixos-install --no-channel-copy --no-root-password --option substituters "" --system ${system.config.system.build.toplevel}
+      nixos-install --no-channel-copy --no-root-password --option substituters "" --system ${targetSystem.config.system.build.toplevel}
 
       echo "Done! Rebooting..."
       sleep 3
@@ -62,8 +61,6 @@ in
     font = "ter-v16n";
     packages = [ pkgs.terminus_font ];
   };
-
-  hardware.enableRedistributableFirmware = true;
 
   isoImage.isoName = "${config.isoImage.isoBaseName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}.iso";
   isoImage.makeEfiBootable = true;

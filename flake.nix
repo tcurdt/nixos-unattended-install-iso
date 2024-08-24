@@ -16,7 +16,7 @@
       iso = inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
-          inherit inputs;
+          targetSystem = inputs.self.nixosConfigurations.nixos;
         };
         modules = [
           ./iso.nix
