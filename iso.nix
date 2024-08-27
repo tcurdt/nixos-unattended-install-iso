@@ -39,7 +39,8 @@ let
       nixos-install --no-channel-copy --no-root-password --option substituters "" --system ${targetSystem.config.system.build.toplevel}
 
       echo "Done!"
-      echo "Now 'reboot' into the new system"
+      sleep 3
+      shutdown now
     '';
   };
   installerFailsafe = pkgs.writeShellScript "failsafe" ''
