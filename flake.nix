@@ -1,15 +1,15 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-  inputs.disko.url = "github:nix-community/disko/master";
-  inputs.disko.inputs.nixpkgs.follows = "nixpkgs";
+  # inputs.disko.url = "github:nix-community/disko/master";
+  # inputs.disko.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = inputs: {
     nixosConfigurations = {
       nixos = inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
-          inputs.disko.nixosModules.disko
+          # inputs.disko.nixosModules.disko
           ./configuration.nix
         ];
       };
