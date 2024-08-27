@@ -29,12 +29,12 @@
 
   # Select internationalisation properties.
   # i18n.defaultLocale = "en_US.UTF-8";
-  console =  {
-    earlySetup = true;
-    font = "ter-v16n";
-    packages = [ pkgs.terminus_font ];
-    useXkbConfig = true; # use xkb.options in tty.
-  };
+  # console =  {
+  #   earlySetup = true;
+  #   font = "ter-v16n";
+  #   packages = [ pkgs.terminus_font ];
+  #   useXkbConfig = true; # use xkb.options in tty.
+  # };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   # users.users.alice = {
