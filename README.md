@@ -10,3 +10,5 @@ ls -l ./result/iso
 ```bash
 nix run -L .
 ````
+
+based on https://gitlab.com/misuzu/nixos-unattended-install-iso
