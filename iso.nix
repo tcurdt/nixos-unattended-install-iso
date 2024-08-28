@@ -9,18 +9,10 @@ let
       nixos-install-tools
       util-linux
       config.nix.package
+      parted
     ];
     text = ''
       set -euo pipefail
-
-      wait-for() {
-        for _ in seq 10; do
-          if $@; then
-            break
-          fi
-          sleep 1
-        done
-      }
 
       echo "Setting up disks"
       for i in $(lsblk -pln -o NAME,TYPE | grep disk | awk '{ print $1 }'); do
@@ -44,12 +36,11 @@ let
 
 
       echo "Partitioning $DEVICE_MAIN"
-      # DISKO_DEVICE_MAIN=''${DEVICE_MAIN#"/dev/"} ${targetSystem.config.system.build.diskoScript} 2> /dev/null
-      parted $DEVICE_MAIN -- mklabel gpt
-      parted $DEVICE_MAIN -- mkpart boot fat32 1MB 512MB
-      parted $DEVICE_MAIN -- mkpart root ext4 512MB -8GB
-      parted $DEVICE_MAIN -- mkpart swap linux-swap -8GB 100%
-      parted $DEVICE_MAIN -- set 1 esp on
+      parted -s "$DEVICE_MAIN" -- mklabel gpt
+      parted -s "$DEVICE_MAIN" -- mkpart boot fat32 1MB 512MB
+      parted -s "$DEVICE_MAIN" -- mkpart root ext4 512MB -8GB
+      parted -s "$DEVICE_MAIN" -- mkpart swap linux-swap -8GB 100%
+      parted -s "$DEVICE_MAIN" -- set 1 esp on
 
       echo "Formatting"
       mkfs.fat -F 32 -n boot /dev/disk/by-partlabel/boot
@@ -70,8 +61,8 @@ let
       nixos-install \
         --no-channel-copy \
         --no-root-password \
-        --cores 0 \                    # use as many cores as possible
-        --option substituters "" \     # no cache (as the system comes with a derivation)
+        --cores 0 \
+        --option substituters "" \
         --system ${targetSystem.config.system.build.toplevel}
 
       echo "Preparing some files"
