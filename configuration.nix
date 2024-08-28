@@ -3,7 +3,6 @@
 {
   imports = [
     (modulesPath + "/profiles/all-hardware.nix")
-    # ./disko.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
