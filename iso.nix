@@ -5,52 +5,59 @@ let
     runtimeInputs = with pkgs; [
       dosfstools
       e2fsprogs
-      gawk
       nixos-install-tools
       util-linux
       config.nix.package
       parted
     ];
+
     text = ''
       set -euo pipefail
 
-      echo "Setting up disks"
-      for i in $(lsblk -pln -o NAME,TYPE | grep disk | awk '{ print $1 }'); do
-        if [[ "$i" == "/dev/fd0" ]]; then
-          echo "skipping $i (is a floppy)"
-          continue
-        fi
-        if grep -ql "^$i" /proc/mounts; then
-          echo "skipping $i (is in use)"
-        else
-          DEVICE_MAIN="$i"
-          break
-        fi
-      done
-      if [[ -z "$DEVICE_MAIN" ]]; then
-        echo "ERROR: No usable disk found on this machine!"
-        exit 1
-      else
-        echo "Found $DEVICE_MAIN"
-      fi
+      retry() {
+        for _ in seq 10; do
+          if "$@"; then
+            return 0
+          fi
+          sleep 1
+        done
+        echo "retry failed"
+        return 1
+      }
 
+      DEV=/dev/sda
+      [ -b /dev/nvme0n1 ] && DEV=/dev/nvme0n1
+      [ -b /dev/vda ] && DEV=/dev/vda
 
-      echo "Partitioning $DEVICE_MAIN"
-      parted -s "$DEVICE_MAIN" -- mklabel gpt
-      parted -s "$DEVICE_MAIN" -- mkpart boot fat32 1MB 512MB
-      parted -s "$DEVICE_MAIN" -- mkpart root ext4 512MB -8GB
-      parted -s "$DEVICE_MAIN" -- mkpart swap linux-swap -8GB 100%
-      parted -s "$DEVICE_MAIN" -- set 1 esp on
+      echo "Partitioning $DEV"
+      parted -s "$DEV" -- mklabel gpt
+      parted -s "$DEV" -- mkpart boot fat32 1MB 512MB
+      parted -s "$DEV" -- mkpart root ext4 512MB -8GB
+      parted -s "$DEV" -- mkpart swap linux-swap -8GB 100%
+      parted -s "$DEV" -- set 1 esp on
+      sync
+
+      echo "Waiting for partition labels"
+      retry [ -b /dev/disk/by-partlabel/boot ]
+      retry [ -b /dev/disk/by-partlabel/root ]
+      retry [ -b /dev/disk/by-partlabel/swap ]
 
       echo "Formatting"
-      mkfs.fat -F 32 -n boot /dev/disk/by-partlabel/boot
-      mkfs.ext4 -L root /dev/disk/by-partlabel/root
-      mkswap -L swap /dev/disk/by-partlabel/swap
+      retry mkfs.fat -F 32 -n boot /dev/disk/by-partlabel/boot
+      retry mkfs.ext4 -L root /dev/disk/by-partlabel/root
+      retry mkswap -L swap /dev/disk/by-partlabel/swap
+      sync
+
+      echo "Waiting for filesystem labels"
+      retry [ -b /dev/disk/by-label/boot ]
+      retry [ -b /dev/disk/by-label/root ]
+      retry [ -b /dev/disk/by-label/swap ]
 
       echo "Mounting"
       swapon /dev/disk/by-label/swap
+      mkdir -p /mnt
       mount /dev/disk/by-label/root /mnt
-      mkdir /mnt/boot
+      mkdir -p /mnt/boot
       mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
 
       echo "Generating hardware configuration"
@@ -66,10 +73,15 @@ let
         --system ${targetSystem.config.system.build.toplevel}
 
       echo "Preparing some files"
-      echo "foo" > /mnt/root/foo
+      umask 077
+
+      mkdir -p /mnt/root/.ssh
+      echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA2CLOzyXcqk4uo6hCkkQAtozJCebA/Dh4ps6Vr2GVNTC7j7nF5HuT+penp/Y9yPAuTorxunmFn7BPwZggzopEgfmUQ4gf0CysTwPQMxt9yK3ZHpxgkGoJyR0n91OdPAbukqwWZHYxGGxvHNoap59kobUrIImIa97gKxW+IVKwL9iyWXyqonRpue1mf1N1ioDtPLS1yvzf4Jo7aDND+4I/34X6436VwZItUwzvhFcuNh/gQmvKpmVjD+ED2Q/yRtGq0EzsPfrDZg1ZKV5V1cT/3w7QtYFcZB9+AQxq88jVRcIlf3K45kpmbsWVfBFN6ND+NeZK1mlp/3TV8C6dNVqU2w== tcurdt@shodan.local" >> /mnt/root/.ssh/authorized_keys
+
+      echo "git clone git@github.com:tcurdt/nixcfg.git" > /mnt/root/clone
+
 
       echo "Done!"
-      sleep 3
       shutdown now
     '';
   };
