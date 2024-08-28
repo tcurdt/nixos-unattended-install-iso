@@ -13,6 +13,15 @@ let
     text = ''
       set -euo pipefail
 
+      wait-for() {
+        for _ in seq 10; do
+          if $@; then
+            break
+          fi
+          sleep 1
+        done
+      }
+
       echo "Setting up disks"
       for i in $(lsblk -pln -o NAME,TYPE | grep disk | awk '{ print $1 }'); do
         if [[ "$i" == "/dev/fd0" ]]; then
@@ -86,11 +95,11 @@ in
 
   boot.kernelParams = [ "systemd.unit=getty.target" ];
 
-  console =  {
-    earlySetup = true;
-    font = "ter-v16n";
-    packages = [ pkgs.terminus_font ];
-  };
+  # console =  {
+  #   earlySetup = true;
+  #   font = "ter-v16n";
+  #   packages = [ pkgs.terminus_font ];
+  # };
 
   isoImage.isoName = "${config.isoImage.isoBaseName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}.iso";
   isoImage.makeEfiBootable = true;

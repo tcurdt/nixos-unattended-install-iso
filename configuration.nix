@@ -1,19 +1,29 @@
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page, on
-# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
 { config, lib, pkgs, modulesPath, ... }:
 
 {
   imports = [
     (modulesPath + "/profiles/all-hardware.nix")
-    ./disko.nix
+    # ./disko.nix
   ];
 
-  # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-label/boot";
+    fsType = "vfat";
+  };
+
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/root";
+    fsType = "ext4";
+  };
+
+  swapDevices = [{
+    device = "/dev/disk/by-label/swap";
+  }];
+
+  networking.useDHCP = lib.mkDefault true;
   networking.hostName = "nixos";
 
   # Pick only one of the below networking options.
