@@ -22,7 +22,7 @@
       iso-x86 = inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
-          targetSystem = inputs.self.nixosConfigurations.nixos;
+          targetSystem = inputs.self.nixosConfigurations.nixos-x86;
         };
         modules = [
           ./iso.nix
@@ -32,7 +32,7 @@
       iso-arm = inputs.nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         specialArgs = {
-          targetSystem = inputs.self.nixosConfigurations.nixos;
+          targetSystem = inputs.self.nixosConfigurations.nixos-arm;
         };
         modules = [
           ./iso.nix
