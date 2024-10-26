@@ -16,12 +16,12 @@ jobs:
       matrix:
         arch: [x86] # , arm ]
         configuration: [iso]
-    name: build ${{ matrix.arch }}-${{ matrix.configuration }}
+    name: build ${{ matrix.configuration }}-${{ matrix.arch }}
     runs-on: ubuntu-latest # matrix.arch
     steps:
       - name: free disk space
         uses: jlumbroso/free-disk-space@main
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
-      - run: nix build -L .#nixosConfigurations.${{ matrix.configuration }}-$${{ matrix.arch }}.config.system.build.isoImage
-      # - run: nix build -L .#nixosConfigurations.${{ matrix.configuration }}-$${{ matrix.arch }}.config.system.build.toplevel
+      - run: nix build -L .#nixosConfigurations.${{ matrix.configuration }}-${{ matrix.arch }}.config.system.build.isoImage
+      # - run: nix build -L .#nixosConfigurations.${{ matrix.configuration }}-${{ matrix.arch }}.config.system.build.toplevel
