@@ -10,13 +10,12 @@ on:
       - "README.md"
 
 jobs:
-  strategy:
-    max-parallel: 2
-    matrix:
-      arch: [x86] # , arm ]
-      configuration: [iso]
-
   build:
+    strategy:
+      max-parallel: 2
+      matrix:
+        arch: [x86] # , arm ]
+        configuration: [iso]
     name: build ${{ matrix.arch }}-${{ matrix.configuration }}
     runs-on: ubuntu-latest # matrix.arch
     steps:
