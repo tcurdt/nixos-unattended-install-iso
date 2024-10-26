@@ -2,13 +2,13 @@
 let
   installer = pkgs.writeShellApplication {
     name = "installer";
-    runtimeInputs = with pkgs; [
-      dosfstools
-      e2fsprogs
-      nixos-install-tools
-      util-linux
+    runtimeInputs = [
+      pkgs.dosfstools
+      pkgs.e2fsprogs
+      pkgs.nixos-install-tools
+      pkgs.util-linux
+      pkgs.parted
       config.nix.package
-      parted
     ];
 
     text = ''
