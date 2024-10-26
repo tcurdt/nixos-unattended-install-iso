@@ -2,12 +2,12 @@ name: ci
 
 on:
   workflow_dispatch:
-  pull_request:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - "README.md"
+  # pull_request:
+  # push:
+  #   branches:
+  #     - main
+  #   paths-ignore:
+  #     - "README.md"
 
 jobs:
   build:
@@ -23,5 +23,5 @@ jobs:
         uses: jlumbroso/free-disk-space@main
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
-      - run: nix build -L .#nixosConfigurations.${{ matrix.configuration }}-$${{ matrix.configuration }}.config.system.build.isoImage
-      # - run: nix build -L .#nixosConfigurations.${{ matrix.configuration }}-$${{ matrix.configuration }}.config.system.build.toplevel
+      - run: nix build -L .#nixosConfigurations.${{ matrix.configuration }}-$${{ matrix.arch }}.config.system.build.isoImage
+      # - run: nix build -L .#nixosConfigurations.${{ matrix.configuration }}-$${{ matrix.arch }}.config.system.build.toplevel
