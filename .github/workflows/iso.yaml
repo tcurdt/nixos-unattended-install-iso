@@ -9,11 +9,11 @@ jobs:
       max-parallel: 2
       matrix:
         config: [iso]
-        arch: [x86, arm]
+        arch: [x86] # , arm]
     name: build ${{ matrix.config }}-${{ matrix.arch }}
     runs-on: ubuntu-latest # matrix.arch
     steps:
-      - uses: jlumbroso/free-disk-space@main
+      # - uses: jlumbroso/free-disk-space@main
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
       - run: nix build -L .#nixosConfigurations.${{ matrix.config }}-${{ matrix.arch }}.config.system.build.isoImage
