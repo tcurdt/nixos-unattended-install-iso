@@ -7,7 +7,7 @@ build-iso-arm:
     ls -l ./result/iso
 
 build-raw-x86:
-    nix build -L .#nixosConfigurations.raw-x86.config.system.build.rawImage
+    nix build -L .#nixosConfigurations.raw-x86.config.system.build.diskImage
     ls -l ./result/raw
 
 # build-raw-arm:

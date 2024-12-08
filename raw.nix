@@ -1,62 +1,90 @@
 { config, pkgs, lib, modulesPath, targetSystem, ... }:
 let
-  sshKeys = ''
-    ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA2CLOzyXcqk4uo6hCkkQAtozJCebA/Dh4ps6Vr2GVNTC7j7nF5HuT+penp/Y9yPAuTorxunmFn7BPwZggzopEgfmUQ4gf0CysTwPQMxt9yK3ZHpxgkGoJyR0n91OdPAbukqwWZHYxGGxvHNoap59kobUrIImIa97gKxW+IVKwL9iyWXyqonRpue1mf1N1ioDtPLS1yvzf4Jo7aDND+4I/34X6436VwZItUwzvhFcuNh/gQmvKpmVjD+ED2Q/yRtGq0EzsPfrDZg1ZKV5V1cT/3w7QtYFcZB9+AQxq88jVRcIlf3K45kpmbsWVfBFN6ND+NeZK1mlp/3TV8C6dNVqU2w== tcurdt@shodan.local
-  '';
-in
-{
-  imports = [
-    (modulesPath + "/profiles/all-hardware.nix")
-  ];
+  installer = pkgs.writeShellApplication {
+    name = "installer";
+    runtimeInputs = [
+      pkgs.dosfstools
+      pkgs.e2fsprogs
+      pkgs.nixos-install-tools
+      pkgs.util-linux
+      pkgs.parted
+      config.nix.package
+      targetSystem.config.system.build.toplevel
+    ];
 
-  boot.loader.grub.enable = true;
-  boot.loader.grub.devices = [ "/dev/sda" ];
-  boot.initrd.availableKernelModules = [
-    "ata_piix"
-    "uhci_hcd"
-    "virtio_pci"
-    "virtio_blk"
-    "sd_mod"
-    "sr_mod"
-  ];
+    text = ''
+      set -euo pipefail
 
-  system.build.diskImage = import "${pkgs.path}/nixos/lib/make-disk-image.nix" {
-    inherit pkgs config;
-    diskSize = 8192; # Size in MiB
-    format = "raw";
-    partitionTableType = "gpt";
-    copyChannel = false;
-
-    partitionScript = ''
+      echo "Partitioning disk"
       parted -s /dev/vda -- mklabel gpt
       parted -s /dev/vda -- mkpart boot fat32 1MB 512MB
       parted -s /dev/vda -- mkpart root ext4 512MB -8GB
       parted -s /dev/vda -- mkpart swap linux-swap -8GB 100%
       parted -s /dev/vda -- set 1 esp on
-    '';
+      sync
 
-    postVM = ''
-      # Setup SSH keys
+      echo "Formatting partitions"
+      mkfs.fat -F 32 -n boot /dev/vda1
+      mkfs.ext4 -L root /dev/vda2
+      mkswap -L swap /dev/vda3
+      sync
+
+      echo "Mounting filesystems"
+      swapon /dev/vda3
+      mkdir -p /mnt
+      mount /dev/vda2 /mnt
+      mkdir -p /mnt/boot
+      mount /dev/vda1 /mnt/boot
+
+      echo "Installing the system"
+      nixos-install \
+        --no-channel-copy \
+        --no-root-password \
+        --cores 0 \
+        --option substituters "" \
+        --system ${targetSystem.config.system.build.toplevel}
+
+      echo "Preparing some files"
+      umask 077
+
       mkdir -p /mnt/root/.ssh
-      echo "${sshKeys}" > /mnt/root/.ssh/authorized_keys
-      chmod 700 /mnt/root/.ssh
-      chmod 600 /mnt/root/.ssh/authorized_keys
+      echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA2CLOzyXcqk4uo6hCkkQAtozJCebA/Dh4ps6Vr2GVNTC7j7nF5HuT+penp/Y9yPAuTorxunmFn7BPwZggzopEgfmUQ4gf0CysTwPQMxt9yK3ZHpxgkGoJyR0n91OdPAbukqwWZHYxGGxvHNoap59kobUrIImIa97gKxW+IVKwL9iyWXyqonRpue1mf1N1ioDtPLS1yvzf4Jo7aDND+4I/34X6436VwZItUwzvhFcuNh/gQmvKpmVjD+ED2Q/yRtGq0EzsPfrDZg1ZKV5V1cT/3w7QtYFcZB9+AQxq88jVRcIlf3K45kpmbsWVfBFN6ND+NeZK1mlp/3TV8C6dNVqU2w== tcurdt@shodan.local" >> /mnt/root/.ssh/authorized_keys
 
-      # Add git clone helper
       echo "git clone git@github.com:tcurdt/nixcfg.git" > /mnt/root/clone
+
+      umount -R /mnt
+      echo "Done!"
     '';
   };
+in
+{
+  imports = [
+    (modulesPath + "/profiles/qemu-guest.nix")
+    (modulesPath + "/profiles/all-hardware.nix")
+  ];
 
-  networking.useDHCP = true;
-  services.openssh = {
-    enable = true;
-    settings.PermitRootLogin = "prohibit-password";
-  };
+  system.build.diskImage = pkgs.vmTools.runInLinuxVM (
+    pkgs.runCommand "disk-image" {
+      preVM = ''
+        mkdir $out
+        ${pkgs.vmTools.qemu}/bin/qemu-img create -f raw $out/disk.img 8G
+      '';
+      buildInputs = [ installer ];
+      QEMU_OPTS = "-drive id=drive1,file=$out/disk.img,if=virtio,cache=writeback,format=raw";
+      paths = [ targetSystem.config.system.build.toplevel ];
+    } ''
+      ${lib.getExe installer}
+    ''
+  );
 
-  environment.systemPackages = with pkgs; [
-    vim
-    curl
-    wget
+  boot.initrd.availableKernelModules = [
+    "ata_piix"
+    "uhci_hcd"
+    "virtio_pci"
+    "virtio_blk"
+    "virtio_scsi"
+    "sd_mod"
+    "sr_mod"
   ];
 
   system.stateVersion = "24.05";
