@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
       - run: nix build -L .#nixosConfigurations.${{ matrix.config }}-${{ matrix.arch }}.config.system.build.${{ matrix.config }}Image
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.config }}
           path: result/${{ matrix.config }}/nixos-*.${{ matrix.config }}
