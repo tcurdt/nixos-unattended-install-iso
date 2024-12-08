@@ -46,6 +46,16 @@
         ];
       };
 
+      raw-x86 = inputs.nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {
+          targetSystem = inputs.self.nixosConfigurations.nixos-x86;
+        };
+        modules = [
+          ./raw.nix
+        ];
+      };
+
     };
 
     # packages.x86_64-linux.default = let
