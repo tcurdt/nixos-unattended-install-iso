@@ -10,6 +10,6 @@ build-raw-x86:
     nix build -L .#nixosConfigurations.raw-x86.config.system.build.rawImage
     ls -l ./result/raw
 
-build-raw-arm:
-    nix build -L .#nixosConfigurations.raw-arm.config.system.build.rawImage
-    ls -l ./result/raw
+# build-raw-arm:
+#     nix build -L .#nixosConfigurations.raw-arm.config.system.build.rawImage
+#     ls -l ./result/raw

@@ -16,11 +16,11 @@ jobs:
       # - uses: jlumbroso/free-disk-space@main
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
-      - run: nix build -L .#nixosConfigurations.${{ matrix.config }}-${{ matrix.arch }}.config.system.build.isoImage
+      - run: nix build -L .#nixosConfigurations.${{ matrix.config }}-${{ matrix.arch }}.config.system.build.${{ matrix.config }}Image
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.config }}
-          path: result/iso/nixos-*.${{ matrix.config }}
+          path: result/${{ matrix.config }}/nixos-*.${{ matrix.config }}
 
   # release:
   #   runs-on: ubuntu-latest
