@@ -58,7 +58,12 @@ let
   };
 in
 {
-  imports = [
+    # not sure about this start
+    fileSystems."/".device = "/dev/null";
+    boot.loader.grub.enable = false;
+    # not sure about this stop
+
+    imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
     (modulesPath + "/profiles/all-hardware.nix")
   ];
