@@ -12,7 +12,7 @@ ls -l ./result/iso
 # Build the RAW image
 
 ```bash
-nix build -L .#nixosConfigurations.raw-x86.config.system.build.diskImage
+nix build -L .#nixosConfigurations.disk-x86.config.system.build.diskImage
 ```
 
 based on https://gitlab.com/misuzu/nixos-unattended-install-iso

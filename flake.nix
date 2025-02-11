@@ -25,7 +25,6 @@
         # disko.devices.disk.main.device = "/dev/sda";
       };
 
-
       iso-x86 = inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
@@ -46,7 +45,7 @@
         ];
       };
 
-      raw-x86 = inputs.nixpkgs.lib.nixosSystem {
+      disk-x86 = inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
           targetSystem = inputs.self.nixosConfigurations.nixos-x86;
