@@ -1,4 +1,10 @@
-{ config, lib, pkgs, modulesPath, ... }:
+{
+  # config,
+  lib,
+  pkgs,
+  modulesPath,
+  ...
+}:
 
 {
   imports = [
@@ -18,9 +24,11 @@
     fsType = "ext4";
   };
 
-  swapDevices = [{
-    device = "/dev/disk/by-label/swap";
-  }];
+  swapDevices = [
+    {
+      device = "/dev/disk/by-label/swap";
+    }
+  ];
 
   networking.useDHCP = lib.mkDefault true;
   networking.hostName = "nixos";
@@ -58,9 +66,9 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-      nano
-      gitMinimal
-      curl
+    nano
+    gitMinimal
+    curl
   ];
 
   # Enable the OpenSSH daemon.
