@@ -7,8 +7,8 @@
   outputs =
     inputs:
     let
-      # pkgs = nixpkgs.legacyPackages.${system};
-      # inherit (pkgs) lib;
+      pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
+      inherit (pkgs) lib;
       make-disk-image = import "${inputs.nixpkgs}/nixos/lib/make-disk-image.nix";
     in
     {
@@ -19,6 +19,7 @@
           modules = [
             # inputs.disko.nixosModules.disko
             ./configuration.nix
+            # ./make-disk-image.nix
           ];
           # disko.devices.disk.main.device = "/dev/sda";
         };
@@ -62,14 +63,14 @@
         #   ];
         # };
 
-        # disk-x86 = make-disk-image {
-        #   inherit pkgs lib; # where should these come from?
-        #   config = inputs.self.nixosConfigurations.nixos-x86.config;
-        #   name = "nixos-cloud-x86";
-        #   format = "qcow2-compressed";
-        #   copyChannel = false;
-        #   additionalSpace = "10G";
-        # };
+        disk-x86 = make-disk-image {
+          inherit pkgs lib; # where should these come from?
+          config = inputs.self.nixosConfigurations.nixos-x86.config;
+          name = "nixos-cloud-x86";
+          format = "qcow2-compressed";
+          copyChannel = false;
+          additionalSpace = "10G";
+        };
 
       };
 

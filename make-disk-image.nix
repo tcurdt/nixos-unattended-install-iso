@@ -1,9 +1,8 @@
 {
   # config,
-  pkgs,
   # lib,
+  pkgs,
   # modulesPath,
-  # targetSystem,
   ...
 }:
 let
