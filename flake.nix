@@ -7,10 +7,10 @@
   outputs =
     inputs:
     let
-      pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
-      inherit (pkgs) lib;
-      make-disk-image = import "${inputs.nixpkgs}/nixos/lib/make-disk-image.nix";
     in
+    # pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
+    # inherit (pkgs) lib;
+    # make-disk-image = import "${inputs.nixpkgs}/nixos/lib/make-disk-image.nix";
     {
       nixosConfigurations = {
 
@@ -63,14 +63,14 @@
         #   ];
         # };
 
-        disk-x86 = make-disk-image {
-          inherit pkgs lib; # where should these come from?
-          config = inputs.self.nixosConfigurations.nixos-x86.config;
-          name = "nixos-cloud-x86";
-          format = "qcow2-compressed";
-          copyChannel = false;
-          additionalSpace = "10G";
-        };
+        # disk-x86 = make-disk-image {
+        #   inherit pkgs lib; # where should these come from?
+        #   config = inputs.self.nixosConfigurations.nixos-x86.config;
+        #   name = "nixos-cloud-x86";
+        #   format = "qcow2-compressed";
+        #   copyChannel = false;
+        #   additionalSpace = "10G";
+        # };
 
       };
 
