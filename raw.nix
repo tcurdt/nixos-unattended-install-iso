@@ -29,8 +29,9 @@
 
   system.build.diskImage = import "${pkgs.path}/nixos/lib/make-disk-image.nix" {
     inherit lib pkgs config;
-    diskSize = "8G";
-    format = "qcow2"; # or "raw"
+    diskSize = "auto";
+    additionalSpace = "512M";
+    format = "raw";
     partitionTableType = "efi";
 
     postVM = ''
