@@ -19,9 +19,7 @@
           modules = [
             # inputs.disko.nixosModules.disko
             ./configuration.nix
-            # ./make-disk-image.nix
           ];
-          # disko.devices.disk.main.device = "/dev/sda";
         };
 
         nixos-arm = inputs.nixpkgs.lib.nixosSystem {
@@ -30,7 +28,6 @@
             # inputs.disko.nixosModules.disko
             ./configuration.nix
           ];
-          # disko.devices.disk.main.device = "/dev/sda";
         };
 
         iso-x86 = inputs.nixpkgs.lib.nixosSystem {
