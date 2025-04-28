@@ -14,8 +14,13 @@
 
   fileSystems."/".device = lib.mkDefault "/dev/disk/by-label/root";
   fileSystems."/boot".device = lib.mkDefault "/dev/disk/by-label/boot";
-  boot.loader.grub.enable = lib.mkDefault true;
-  boot.loader.grub.devices = lib.mkDefault [ "/dev/vda" ];
+
+  boot.loader.grub = {
+    enable = true;
+    efiSupport = true;
+    device = "nodev";
+    efiInstallAsRemovable = true;
+  };
 
   boot.initrd.availableKernelModules = [
     "ata_piix"
@@ -29,16 +34,15 @@
 
   system.build.diskImage = import "${pkgs.path}/nixos/lib/make-disk-image.nix" {
     inherit lib pkgs config;
+
     diskSize = "auto";
     additionalSpace = "512M";
     format = "raw";
     partitionTableType = "efi";
 
     postVM = ''
-      # create SSH directory and add authorized key
       mkdir -p $out/nix-support
       echo "file raw-disk-image $out/disk.img" >> $out/nix-support/hydra-build-products
-
     '';
 
     # target system
@@ -48,6 +52,23 @@
         target = "/system";
       }
     ];
+
+    # partitions = [
+    #   {
+    #     name = "ESP";
+    #     size = "256M";
+    #     fsType = "vfat";
+    #     mountPoint = "/boot";
+    #     bootable = true;
+    #   }
+    #   {
+    #     name = "root";
+    #     size = "100%";
+    #     fsType = "ext4";
+    #     mountPoint = "/";
+    #   }
+    # ];
+
   };
 
   system.stateVersion = "24.11";

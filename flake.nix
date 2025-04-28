@@ -72,7 +72,6 @@
       packages.x86_64-linux = {
         iso = inputs.self.nixosConfigurations.iso-x86.config.system.build.isoImage;
         raw = inputs.self.nixosConfigurations.raw-x86.config.system.build.diskImage;
-        # default = inputs.self.packages.x86_64-linux.raw;
       };
 
     };
