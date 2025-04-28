@@ -9,8 +9,6 @@
     let
     in
     # pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
-    # inherit (pkgs) lib;
-    # make-disk-image = import "${inputs.nixpkgs}/nixos/lib/make-disk-image.nix";
     {
       nixosConfigurations = {
 
@@ -22,13 +20,13 @@
           ];
         };
 
-        nixos-arm = inputs.nixpkgs.lib.nixosSystem {
-          system = "aarch64-linux";
-          modules = [
-            # inputs.disko.nixosModules.disko
-            ./configuration.nix
-          ];
-        };
+        # nixos-arm = inputs.nixpkgs.lib.nixosSystem {
+        #   system = "aarch64-linux";
+        #   modules = [
+        #     # inputs.disko.nixosModules.disko
+        #     ./configuration.nix
+        #   ];
+        # };
 
         iso-x86 = inputs.nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
@@ -40,17 +38,17 @@
           ];
         };
 
-        iso-arm = inputs.nixpkgs.lib.nixosSystem {
-          system = "aarch64-linux";
-          specialArgs = {
-            targetSystem = inputs.self.nixosConfigurations.nixos-arm;
-          };
-          modules = [
-            ./iso.nix
-          ];
-        };
+        # iso-arm = inputs.nixpkgs.lib.nixosSystem {
+        #   system = "aarch64-linux";
+        #   specialArgs = {
+        #     targetSystem = inputs.self.nixosConfigurations.nixos-arm;
+        #   };
+        #   modules = [
+        #     ./iso.nix
+        #   ];
+        # };
 
-        # disk-x86 = inputs.nixpkgs.lib.nixosSystem {
+        # raw-x86 = inputs.nixpkgs.lib.nixosSystem {
         #   system = "x86_64-linux";
         #   specialArgs = {
         #     targetSystem = inputs.self.nixosConfigurations.nixos-x86;
@@ -60,15 +58,21 @@
         #   ];
         # };
 
-        # disk-x86 = make-disk-image {
-        #   inherit pkgs lib; # where should these come from?
-        #   config = inputs.self.nixosConfigurations.nixos-x86.config;
-        #   name = "nixos-cloud-x86";
-        #   format = "qcow2-compressed";
-        #   copyChannel = false;
-        #   additionalSpace = "10G";
-        # };
+        raw-x86 = inputs.nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = {
+            targetSystem = inputs.self.nixosConfigurations.nixos-x86;
+          };
+          modules = [
+            ./raw.nix
+          ];
+        };
+      };
 
+      packages.x86_64-linux = {
+        iso = inputs.self.nixosConfigurations.iso-x86.config.system.build.isoImage;
+        raw = inputs.self.nixosConfigurations.raw-x86.config.system.build.diskImage;
+        # default = inputs.self.packages.x86_64-linux.raw;
       };
 
     };

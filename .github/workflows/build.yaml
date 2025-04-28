@@ -8,19 +8,19 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        config: [iso]
-        arch: [x86]
-    name: build ${{ matrix.config }}-${{ matrix.arch }}
+        type: [iso, raw]
+        arch: [x86_64-linux]
+    name: build ${{ matrix.type }}-${{ matrix.arch }}
     runs-on: ubuntu-latest # matrix.arch
     steps:
       # - uses: jlumbroso/free-disk-space@main
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
-      - run: nix build -L .#nixosConfigurations.${{ matrix.config }}-${{ matrix.arch }}.config.system.build.${{ matrix.config }}Image
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.config }}
-          path: result/${{ matrix.config }}/nixos-*.${{ matrix.config }}
+      - run: nix build -L .#packages.${{ matrix.arch }}.${{ matrix.type }}
+      # - uses: actions/upload-artifact@v4
+      #   with:
+      #     name: ${{ matrix.type }}-${{ matrix.arch }}
+      #     path: result/${{ matrix.config }}/nixos-*.${{ matrix.config }}
 
   # release:
   #   runs-on: ubuntu-latest

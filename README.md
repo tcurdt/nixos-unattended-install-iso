@@ -4,15 +4,13 @@ And then installs NixOS on it.
 # Build an ISO image
 
 ```bash
-nix build -L .#nixosConfigurations.iso-x86.config.system.build.isoImage
-nix build -L .#nixosConfigurations.iso-arm.config.system.build.isoImage
-ls -l ./result/iso
+nix build -L .#packages.x86_64-linux.iso
+nix build -L .#packages.x86_64-linux.raw
+
+find ./result
 ````
 
-# Build the RAW image
 
-```bash
-nix build -L .#nixosConfigurations.disk-x86.config.system.build.diskImage
-```
+# Credits
 
 based on https://gitlab.com/misuzu/nixos-unattended-install-iso

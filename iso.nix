@@ -1,4 +1,11 @@
-{ config, pkgs, lib, modulesPath, targetSystem, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  modulesPath,
+  targetSystem,
+  ...
+}:
 let
   installer = pkgs.writeShellApplication {
     name = "installer";
@@ -112,11 +119,14 @@ in
   systemd.services."getty@tty1" = {
     overrideStrategy = "asDropin";
     serviceConfig = {
-      ExecStart = [ "" installerFailsafe ];
+      ExecStart = [
+        ""
+        installerFailsafe
+      ];
       Restart = "no";
       StandardInput = "null";
     };
   };
 
-  system.stateVersion = "24.05";
+  system.stateVersion = "24.11";
 }
