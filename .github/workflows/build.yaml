@@ -2,13 +2,20 @@ name: build
 
 on:
   workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "README.md"
 
 jobs:
   build:
     strategy:
       max-parallel: 2
       matrix:
-        type: [iso, raw]
+        # type: [iso, raw]
+        type: [raw]
         arch: [x86_64-linux]
     name: build ${{ matrix.type }}-${{ matrix.arch }}
     runs-on: ubuntu-latest # matrix.arch
@@ -17,6 +24,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
       - run: nix build -L .#packages.${{ matrix.arch }}.${{ matrix.type }}
+      - run: |
+          find result
       # - uses: actions/upload-artifact@v4
       #   with:
       #     name: ${{ matrix.type }}-${{ matrix.arch }}
