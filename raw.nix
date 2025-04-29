@@ -41,8 +41,7 @@
     partitionTableType = "efi";
 
     postVM = ''
-      mkdir -p $out/nix-support
-      echo "file raw-disk-image $out/disk.img" >> $out/nix-support/hydra-build-products
+      echo "out" >> $out/postvm.txt
     '';
 
     # target system

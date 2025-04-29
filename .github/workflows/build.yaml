@@ -26,9 +26,12 @@ jobs:
       - run: |
           nix build -L .#packages.${{ matrix.arch }}.${{ matrix.type }}
       - run: |
+          echo "pwd:"
           pwd
-          ls -la result
-          ls -la /nix/store
+          echo "result:"
+          ls -la result/
+          echo "nix store:"
+          ls -la /nix/store/
 
       # - uses: actions/upload-artifact@v4
       #   with:
