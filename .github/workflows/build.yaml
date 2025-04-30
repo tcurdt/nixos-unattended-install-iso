@@ -15,8 +15,8 @@ jobs:
       max-parallel: 2
       matrix:
         # type: [iso, raw]
-        # type: [raw]
-        type: [iso]
+        type: [raw]
+        # type: [iso]
         arch: [x86_64-linux]
     name: build ${{ matrix.type }}-${{ matrix.arch }}
     runs-on: ubuntu-latest # matrix.arch
@@ -27,15 +27,16 @@ jobs:
       - run: |
           nix build -L .#packages.${{ matrix.arch }}.${{ matrix.type }}
       - run: |
-          ls -la result/
+          find result/
+          ls -laR result/
 
-      # xz -c2 result/nixos.img > nixos.img.xz
-      # ls -la nixos.img.xz
+          xz -c2 result/nixos.img > nixos.img.xz
+          ls -la nixos.img.xz
 
-      # - uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ${{ matrix.type }}-${{ matrix.arch }}
-      #     path: nixos.img.xz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hetzner-${{ matrix.arch }}.img.xz
+          path: nixos.img.xz
 
   # release:
   #   runs-on: ubuntu-latest

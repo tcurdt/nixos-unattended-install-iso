@@ -1,2 +1,5 @@
+.env
+*.xz
 *.qcow2
 result
+tofu

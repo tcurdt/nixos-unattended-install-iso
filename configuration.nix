@@ -13,6 +13,7 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  # boot.kernelParams = [ "net.ifnames=0" ];
 
   fileSystems."/boot" = {
     device = "/dev/disk/by-label/boot";
@@ -58,6 +59,19 @@
   #   ];
   # };
 
+  users.users.root = {
+
+    openssh.authorizedKeys.keyFiles = [ ./tcurdt.pub ];
+
+    # password = "secret";
+
+    # initialHashedPassword = "";
+    # promptInitialPassword = true;
+
+    hashedPassword = "*"; # no password allowed
+
+  };
+
   environment.systemPackages = with pkgs; [
     nano
     gitMinimal
@@ -66,9 +80,7 @@
 
   services.openssh.enable = true;
 
-  services.getty.autologinUser = "root";
-
-  users.users.root.initialHashedPassword = "";
+  # services.getty.autologinUser = "root";
 
   system.stateVersion = "24.11";
 }

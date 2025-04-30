@@ -16,9 +16,10 @@
   fileSystems."/boot".device = lib.mkDefault "/dev/disk/by-label/boot";
 
   boot.loader.grub = {
-    enable = true;
+    # enable = true;
     efiSupport = true;
-    device = "nodev";
+    # device = "nodev";
+    device = "/dev/sda";
     efiInstallAsRemovable = true;
   };
 
@@ -30,6 +31,9 @@
     "virtio_scsi"
     "sd_mod"
     "sr_mod"
+    # "ahci"
+    # "xhci_pci"
+    "ext4"
   ];
 
   system.build.diskImage = import "${pkgs.path}/nixos/lib/make-disk-image.nix" {
@@ -42,6 +46,9 @@
 
     postVM = ''
       echo "out" >> $out/postvm.txt
+      dd if=/dev/zero of=/zero bs=4M || true
+      sync
+      rm -f /zero
     '';
 
     # target system
