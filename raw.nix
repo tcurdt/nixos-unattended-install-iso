@@ -18,8 +18,8 @@
   boot.loader.grub = {
     # enable = true;
     efiSupport = true;
-    # device = "nodev";
-    device = "/dev/sda";
+    device = "nodev";
+    # device = "/dev/sda";
     efiInstallAsRemovable = true;
   };
 
