@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest # matrix.arch
     steps:
       # - uses: jlumbroso/free-disk-space@main
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: DeterminateSystems/nix-installer-action@main
       - run: |
           nix build -L .#packages.${{ matrix.arch }}.${{ matrix.type }}
