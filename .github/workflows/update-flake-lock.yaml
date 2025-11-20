@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: install nix
         uses: DeterminateSystems/nix-installer-action@main
       - name: update flake.lock
