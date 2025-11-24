@@ -37,6 +37,7 @@ jobs:
         with:
           name: hetzner-${{ matrix.arch }}.img.xz
           path: nixos.img.xz
+          retention-days: 1
 
   # release:
   #   runs-on: ubuntu-latest

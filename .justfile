@@ -19,7 +19,7 @@ images:
 
 upload:
     hcloud-upload-image upload \
-        --image-path nixos-hetzner-x86.img.xz \
+        --image-path nixos.img.xz \
         --architecture x86 \
         --compression xz \
         --description "nixos" \
