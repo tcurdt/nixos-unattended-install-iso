@@ -33,7 +33,7 @@ jobs:
           xz -c2 result/nixos.img > nixos.img.xz
           ls -la nixos.img.xz
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: hetzner-${{ matrix.arch }}.img.xz
           path: nixos.img.xz
