@@ -12,8 +12,8 @@
     (modulesPath + "/profiles/all-hardware.nix")
   ];
 
-  fileSystems."/".device = lib.mkDefault "/dev/disk/by-label/root";
-  fileSystems."/boot".device = lib.mkDefault "/dev/disk/by-label/boot";
+  fileSystems."/" = lib.mkDefault { device = "/dev/disk/by-label/root"; fsType = "ext4"; };
+  fileSystems."/boot" = lib.mkDefault { device = "/dev/disk/by-label/boot"; fsType = "vfat"; };
 
   boot.loader.grub = {
     # enable = true;
